@@ -289,9 +289,6 @@ def llda_cvb0(gamma, t_vocab, w_vocab, alpha, eta, count):
     for t in phi:
         for w in w_vocab:
             phi[t][w] = (n1[t][w] + eta)/(n1_all[t] + veta)
-    f = open('pz.txt', 'a')
-    print >>f, pl
-    f.close()
     return pl, phi
 
 
@@ -341,8 +338,6 @@ def llda_test(data, pz, phi):
     l0 = phi.keys()[0]
     w_vocab = set(phi[l0].keys())
     t_vocab = pz.keys()
-    trans = gen_trans(t_vocab)
-    pz = multiple(trans, pz)
     r5 = 0
     r10 = 0
     p5 = 0
@@ -437,7 +432,6 @@ def llda_test(data, pz, phi):
 def main():
     data = load_data()
     fold = 10
-    open('pz.txt', 'w').close()
     tr_datas, te_datas = split_data(data, fold)
 
     # fold_id = int(sys.argv[1])
