@@ -38,7 +38,7 @@ def transfer_prop(file, files):
                 i += 1
             else:
                 break
-        diff = 1.0 / 10 ** ((len(l1) - i + len(l2) - i) / 2.0 )
+        diff = 1.0 / 5 ** ((len(l1) - i + len(l2) - i) / 2.0 )
         if dis_dic.has_key(diff):
             dis_dic[diff].append(f)
         else:
@@ -91,7 +91,7 @@ def multiple(trans, v):
     sumv = sum([v[k] for k in v.keys()])
     for k1 in u.keys():
         for k2 in v.keys():
-            u[k1] += v[k2] * trans[k1][k2]
+            u[k1] += v[k2] * trans[k2][k1]
     sumu = sum([u[k] for k in u.keys()])
     for k in u.keys():
         u[k] = u[k] * sumv / sumu
@@ -243,6 +243,7 @@ def llda_cvb0(gamma, t_vocab, w_vocab, alpha, eta, count):
         for d in gamma:
             n0, n0_all = calc_n0_n0all(gamma[d])
             #r_trans = reverse_trans(gen_trans(gamma[d][0][1].keys()))
+
             #m0 = multiple(r_trans, n0)
             for w, ts in gamma[d]:
                 g_sum = 0
@@ -273,8 +274,10 @@ def llda_cvb0(gamma, t_vocab, w_vocab, alpha, eta, count):
 
     for d in gamma:
         n0, n0_all = calc_n0_n0all(gamma[d])
+        #r_trans = reverse_trans(gen_trans(gamma[d][0][1].keys()))
+        #m0 = multiple(r_trans, n0)
         for t in theta[d]:
-            theta[d][t] = (n0[t] + alpha_l)/(n0_all + len(theta[d])*alpha_l)
+            theta[d][t] = (n0[t] + alpha_l) / (n0_all + len(theta[d]) * alpha_l)
 
     for d in theta:
         for t in theta[d]:
@@ -286,7 +289,9 @@ def llda_cvb0(gamma, t_vocab, w_vocab, alpha, eta, count):
     for t in phi:
         for w in w_vocab:
             phi[t][w] = (n1[t][w] + eta)/(n1_all[t] + veta)
-
+    f = open('pz.txt', 'a')
+    print >>f, pl
+    f.close()
     return pl, phi
 
 
@@ -336,14 +341,15 @@ def llda_test(data, pz, phi):
     l0 = phi.keys()[0]
     w_vocab = set(phi[l0].keys())
     t_vocab = pz.keys()
-
+    trans = gen_trans(t_vocab)
+    pz = multiple(trans, pz)
     r5 = 0
     r10 = 0
     p5 = 0
     p10 = 0
     h5 = 0
     h10 = 0
-    r20, p20, h20 = 0,0,0
+    r20, p20, h20 = 0, 0, 0
 
 
     #f_result = open(fn, 'w')
@@ -431,7 +437,7 @@ def llda_test(data, pz, phi):
 def main():
     data = load_data()
     fold = 10
-
+    open('pz.txt', 'w').close()
     tr_datas, te_datas = split_data(data, fold)
 
     # fold_id = int(sys.argv[1])
